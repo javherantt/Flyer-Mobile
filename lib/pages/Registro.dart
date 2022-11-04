@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-
-
 class RegistroPage extends StatefulWidget {
   @override
   _RegistroPageState createState() => _RegistroPageState();
@@ -164,8 +162,8 @@ class _RegistroPageState extends State<RegistroPage> {
                           ),
                         ),
                         SizedBox(
-                          height: 30.0,
-                        ),                       
+                          height: 8.0,
+                        ),
                         Container(
                           width: double.infinity,
                           child: RaisedButton(
@@ -187,7 +185,6 @@ class _RegistroPageState extends State<RegistroPage> {
                             ),
                           ),
                         ),
-                        
                       ],
                     ),
                   ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:masveterinarias_app/pages/Cita.dart';
 import 'package:masveterinarias_app/pages/Login.dart';
 import 'package:masveterinarias_app/pages/Prifile.dart';
+import 'package:masveterinarias_app/pages/Registro.dart';
 import 'package:masveterinarias_app/pages/hotel_booking/home_design_course.dart';
 import 'package:masveterinarias_app/pages/hotel_booking/hotel_home_screen.dart';
 
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flyer',
-      home: ProfileTap(),
+      home: RegistroPage(),
     );
   }
 }
