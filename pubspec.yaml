@@ -29,6 +29,8 @@ dependencies:
   smooth_star_rating: ^1.1.1
   intl: ^0.16.0
   dropdown_formfield: ^0.1.3
+  modal_progress_hud_nsn: ^0.1.0-nullsafety-1
+  flutter_session:
 
 dev_dependencies:
   flutter_test:

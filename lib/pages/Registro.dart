@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:masveterinarias_app/pages/PostList.dart';
+import 'package:masveterinarias_app/pages/PublicacionesList.dart';
 
 class RegistroPage extends StatefulWidget {
   @override
@@ -6,6 +10,10 @@ class RegistroPage extends StatefulWidget {
 }
 
 class _RegistroPageState extends State<RegistroPage> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController usernameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,11 +78,12 @@ class _RegistroPageState extends State<RegistroPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         TextField(
+                          controller: emailController,
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: Color(0xFFE7EDEB),
-                            hintText: "Nombre completo",
+                            hintText: "Email",
                             prefixIcon: Icon(
                               Icons.person,
                               color: Colors.grey[600],
@@ -89,11 +98,12 @@ class _RegistroPageState extends State<RegistroPage> {
                           height: 20.0,
                         ),
                         TextField(
-                          keyboardType: TextInputType.emailAddress,
+                          controller: usernameController,
+                          keyboardType: TextInputType.text,
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: Color(0xFFE7EDEB),
-                            hintText: "Email",
+                            hintText: "Username",
                             prefixIcon: Icon(
                               Icons.mail,
                               color: Colors.grey[600],
@@ -108,11 +118,12 @@ class _RegistroPageState extends State<RegistroPage> {
                           height: 20.0,
                         ),
                         TextField(
+                          controller: passwordController,
                           obscureText: true,
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: Color(0xFFE7EDEB),
-                            hintText: "Tu contraseña",
+                            hintText: "Contraseña",
                             prefixIcon: Icon(
                               Icons.lock,
                               color: Colors.grey[600],
@@ -123,6 +134,7 @@ class _RegistroPageState extends State<RegistroPage> {
                             ),
                           ),
                         ),
+                        /*
                         SizedBox(
                           height: 20.0,
                         ),
@@ -160,14 +172,19 @@ class _RegistroPageState extends State<RegistroPage> {
                               borderRadius: BorderRadius.circular(8.0),
                             ),
                           ),
-                        ),
+                        ),*/
                         SizedBox(
                           height: 8.0,
                         ),
                         Container(
                           width: double.infinity,
-                          child: RaisedButton(
-                            onPressed: () {},
+                          child: MaterialButton(
+                            onPressed: () {
+                              postUser(
+                                  emailController.text.toString(),
+                                  usernameController.text.toString(),
+                                  passwordController.text.toString());
+                            },
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
@@ -195,5 +212,29 @@ class _RegistroPageState extends State<RegistroPage> {
         ),
       ),
     );
+  }
+
+  void postUser(String email, username, password) async {
+    //String formatDate =
+    //    DateFormat('yyyy-MM-ddTHH:mm:ss').format(DateTime.now());
+    try {
+      var response = await http.post(
+          Uri.parse("https://flyer-api.azurewebsites.net/api/user"),
+          body: {
+            "email": email,
+            "username": username,
+            "password": password,
+            "image": "",
+            "role": ""
+          });
+      if (response.statusCode == 200) {
+        var route = new MaterialPageRoute(
+          builder: (BuildContext context) => new PostList(),
+        );
+        Navigator.of(context).push(route);
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 }

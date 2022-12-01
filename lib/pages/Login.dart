@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:masveterinarias_app/pages/hotel_booking/hotel_home_screen.dart';
-
-
+import 'package:masveterinarias_app/models/Usuario.dart';
+import 'package:masveterinarias_app/pages/PublicacionesList.dart';
+import 'package:masveterinarias_app/pages/Registro.dart';
+import 'package:masveterinarias_app/pages/PostList.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
+import 'package:flutter_session/flutter_session.dart';
+import 'dart:convert';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -9,6 +14,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,11 +50,11 @@ class _LoginPageState extends State<LoginPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Inicio de sesión",                        
+                        "Inicio de sesión",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 42.0,
-                          fontWeight: FontWeight.w800,                          
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                       SizedBox(
@@ -72,8 +79,8 @@ class _LoginPageState extends State<LoginPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        TextField(
-                          keyboardType: TextInputType.emailAddress,
+                        TextFormField(
+                          controller: emailController,
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: Color(0xFFE7EDEB),
@@ -91,8 +98,9 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(
                           height: 20.0,
                         ),
-                        TextField(
+                        TextFormField(
                           obscureText: true,
+                          controller: passwordController,
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: Color(0xFFE7EDEB),
@@ -110,18 +118,15 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(
                           height: 10.0,
                         ),
-                        
                         SizedBox(
                           height: 50.0,
                         ),
                         Container(
                           width: double.infinity,
-                          child: RaisedButton(
-                            onPressed: () => {
-                              Navigator.push(
-                                context, 
-                                MaterialPageRoute(builder: (context)=> HotelHomeScreen())
-                              )
+                          child: MaterialButton(
+                            onPressed: () {
+                              login(emailController.text.toString(),
+                                  passwordController.text.toString());
                             },
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
@@ -143,8 +148,33 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(
                           height: 80.0,
                         ),
-                        
-                        
+                        Container(
+                          width: double.infinity,
+                          child: MaterialButton(
+                            onPressed: () {
+                              var route = new MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    new RegistroPage(),
+                              );
+                              Navigator.of(context).push(route);
+                            },
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            color: Colors.blue[600],
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 18.0),
+                              child: Text(
+                                "¿No tienes cuentra? Registrarse",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18.0,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -155,5 +185,26 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  void login(String email, password) async {
+    try {
+      Response response = await post(
+          Uri.parse('https://flyer-api.azurewebsites.net/api/User/Login'),
+          body: {'email': email, 'password': password});
+      String status = response.body.toString();
+
+      if (status == "true") {
+        //await FlutterSession().set('token', email);
+        var route = new MaterialPageRoute(
+          builder: (BuildContext context) => new PostList(),
+        );
+        Navigator.of(context).push(route);
+      } else {
+        print('Invalid credentials');
+      }
+    } catch (e) {
+      print(e.toString());
+    }
   }
 }

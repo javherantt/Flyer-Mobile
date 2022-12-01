@@ -2,19 +2,27 @@ import 'package:masveterinarias_app/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:masveterinarias_app/pages/Cita.dart';
 import 'package:masveterinarias_app/pages/Login.dart';
-import 'package:masveterinarias_app/pages/Prifile.dart';
+import 'package:masveterinarias_app/pages/Profile.dart';
 import 'package:masveterinarias_app/pages/Registro.dart';
 import 'package:masveterinarias_app/pages/hotel_booking/home_design_course.dart';
-import 'package:masveterinarias_app/pages/hotel_booking/hotel_home_screen.dart';
+import 'package:masveterinarias_app/pages/PostList.dart';
+import 'package:flutter_session/flutter_session.dart';
 
 void main() => runApp(MyApp());
+/*
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  dynamic token = await FlutterSession().get('token');
+  runApp(MaterialApp(home: token != '' ? HotelHomeScreen() : LoginPage()));
+}
+*/
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flyer',
-      home: RegistroPage(),
+      home: LoginPage(),
     );
   }
 }

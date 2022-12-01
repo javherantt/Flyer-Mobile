@@ -3,7 +3,7 @@ import 'package:masveterinarias_app/pages/hotel_booking/drawer_user_controller.d
 import 'package:masveterinarias_app/pages/hotel_booking/home_drawer.dart';
 
 import 'package:flutter/material.dart';
-import 'package:masveterinarias_app/pages/hotel_booking/hotel_home_screen.dart';
+import 'package:masveterinarias_app/pages/PostList.dart';
 
 class NavigationHomeScreen extends StatefulWidget {
   @override
@@ -17,7 +17,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   @override
   void initState() {
     drawerIndex = DrawerIndex.HOME;
-    screenView = HotelHomeScreen();
+    screenView = PostList();
     super.initState();
   }
 
@@ -50,7 +50,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
       drawerIndex = drawerIndexdata;
       if (drawerIndex == DrawerIndex.HOME) {
         setState(() {
-          screenView = HotelHomeScreen();
+          screenView = PostList();
         });
       } else if (drawerIndex == DrawerIndex.Help) {
         setState(() {
