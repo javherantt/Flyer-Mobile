@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:masveterinarias_app/pages/HomePage.dart';
 import 'package:masveterinarias_app/pages/PostList.dart';
 import 'package:masveterinarias_app/pages/PublicacionesList.dart';
 
@@ -229,7 +230,7 @@ class _RegistroPageState extends State<RegistroPage> {
           });
       if (response.statusCode == 200) {
         var route = new MaterialPageRoute(
-          builder: (BuildContext context) => new PostList(),
+          builder: (BuildContext context) => new HomePage(),
         );
         Navigator.of(context).push(route);
       }

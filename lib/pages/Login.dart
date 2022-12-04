@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:masveterinarias_app/models/Usuario.dart';
+import 'package:masveterinarias_app/pages/HomePage.dart';
 import 'package:masveterinarias_app/pages/PublicacionesList.dart';
 import 'package:masveterinarias_app/pages/Registro.dart';
 import 'package:masveterinarias_app/pages/PostList.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart';
 import 'package:flutter_session/flutter_session.dart';
 import 'dart:convert';
@@ -16,6 +18,18 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    getId();
+  }
+
+  getId() async {
+    SharedPreferences prefers = await SharedPreferences.getInstance();
+    prefers.getInt('id');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -189,15 +203,16 @@ class _LoginPageState extends State<LoginPage> {
 
   void login(String email, password) async {
     try {
+      SharedPreferences prefers = await SharedPreferences.getInstance();
       Response response = await post(
           Uri.parse('https://flyer-api.azurewebsites.net/api/User/Login'),
           body: {'email': email, 'password': password});
-      String status = response.body.toString();
+      int status = int.parse(response.body);
 
-      if (status == "true") {
-        //await FlutterSession().set('token', email);
+      if (status != 0) {
+        prefers.setInt('id', status);
         var route = new MaterialPageRoute(
-          builder: (BuildContext context) => new PostList(),
+          builder: (BuildContext context) => new HomePage(),
         );
         Navigator.of(context).push(route);
       } else {

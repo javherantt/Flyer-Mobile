@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:masveterinarias_app/models/Publicacion.dart';
 import 'package:masveterinarias_app/pages/hotel_booking/training_screen.dart';
+import 'package:masveterinarias_app/pages/color_filters.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PublicacionesList extends StatefulWidget {
   PublicacionesList({Key key}) : super(key: key);
@@ -11,98 +13,214 @@ class PublicacionesList extends StatefulWidget {
 }
 
 class _Publicaciones extends State<PublicacionesList> {
-  Future<List<Publicacion>> _listadoRestau;
-  Future<List<Publicacion>> _getRestaurantes() async {
-    var response = await http
-        .get(Uri.parse('https://flyer-api.azurewebsites.net/api/post'));
-
-    List<Publicacion> _publicaciones = [];
-    if (response.statusCode == 200) {
-      String body = utf8.decode(response.bodyBytes);
-      final jsonData = jsonDecode(body);
-      for (var item in jsonData["data"]) {
-        _publicaciones.add(Publicacion(
-            item['id'],
-            item['userId'],
-            item['tagId'],
-            item['title'],
-            item['description'],
-            item['filename'],
-            item['views'],
-            item['timestamp']));
-      }
-      return _publicaciones;
-    } else {
-      throw Exception("Falló la conexión");
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _listadoRestau = _getRestaurantes();
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Material App',
       home: Scaffold(
         appBar: AppBar(title: Text('Publicaciones')),
-        body: FutureBuilder(
-          future: _listadoRestau,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return GridView.count(
-                crossAxisCount: 1,
-                children: _ListPublicaciones(snapshot.data, context),
-              );
-            } else if (snapshot.hasError) {
-              return Center(
-                  child: Text('No se encontraron resultados',
-                      style: TextStyle(fontWeight: FontWeight.bold)));
-            } else
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-          },
+        body: Container(
+          child: FutureBuilder(
+            future: _getPublicaciones(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              print(snapshot.data);
+              if (snapshot.data == null) {
+                return Container(
+                  child: Center(
+                    child: Text('Cargando ...'),
+                  ),
+                );
+              } else {
+                return ListView.builder(
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            new MaterialPageRoute(
+                                builder: (context) => DetallesPublicacion(
+                                      publicacion: snapshot.data[index],
+                                    )));
+                      },
+                      child: Card(
+                        clipBehavior: Clip.antiAlias,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        child: Column(
+                          children: [
+                            Stack(
+                              children: [
+                                Ink.image(
+                                  image: NetworkImage(
+                                    'https://flyerimages.blob.core.windows.net/imagenes/' +
+                                        snapshot.data[index].filename,
+                                  ),
+                                  height: 240,
+                                  fit: BoxFit.cover,
+                                ),
+                                Positioned(
+                                  bottom: 16,
+                                  right: 16,
+                                  left: 16,
+                                  child: Text(
+                                    snapshot.data[index].title,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                      fontSize: 24,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(16).copyWith(bottom: 0),
+                              child: Text(
+                                snapshot.data[index].description,
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ),
+                            ButtonBar(
+                              alignment: MainAxisAlignment.start,
+                              children: [
+                                TextButton.icon(
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        new MaterialPageRoute(
+                                            builder: (context) =>
+                                                DetallesPublicacion(
+                                                  publicacion:
+                                                      snapshot.data[index],
+                                                )));
+                                  },
+                                  style: TextButton.styleFrom(
+                                    primary: Colors.black87,
+                                  ),
+                                  icon: Icon(Icons.remove_red_eye),
+                                  label: Text('Ver'),
+                                ),
+                                TextButton.icon(
+                                    onPressed: () {},
+                                    style: TextButton.styleFrom(
+                                      primary: Colors.red,
+                                    ),
+                                    icon: Icon(Icons.favorite),
+                                    label: Text('Me gusta'))
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }
+            },
+          ),
         ),
       ),
     );
   }
+
+  Future<List<Publicacion>> _getPublicaciones() async {
+    var data = await http
+        .get(Uri.parse('https://flyer-api.azurewebsites.net/api/post'));
+    var jsonData = json.decode(data.body);
+    List<Publicacion> publicaciones = [];
+    for (var item in jsonData) {
+      Publicacion publicacion = Publicacion(
+          item['id'],
+          item['userId'],
+          item['tagId'],
+          item['title'],
+          item['description'],
+          item['filename'],
+          item['views'],
+          item['timestamp']);
+      publicaciones.add(publicacion);
+    }
+    print(publicaciones.length);
+    return publicaciones;
+  }
 }
 
-List<Widget> _ListPublicaciones(List<Publicacion> data, BuildContext context) {
-  navigateToDetail(consulta) {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => TrainingScreen()));
+class DetallesPublicacion extends StatefulWidget {
+  final Publicacion publicacion;
+  DetallesPublicacion({this.publicacion});
+  @override
+  _DetallesPublicacion createState() => _DetallesPublicacion();
+}
+
+class _DetallesPublicacion extends State<DetallesPublicacion> {
+  int id;
+
+  @override
+  void initState() {
+    super.initState();
+    getId();
   }
 
-  List<Widget> listadoPublicaciones = [];
-  for (var post in data) {
-    listadoPublicaciones.add(Card(
-        child: Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: GestureDetector(
-              onTap: () => navigateToDetail(post),
-              child: Image.network(
-                  'https://flyerimages.blob.core.windows.net/imagenes/' +
-                      post.filename,
-                  height: 120,
-                  width: 140)),
-        ),
-        Flexible(
-          child: RichText(
-            overflow: TextOverflow.ellipsis,
-            strutStyle: StrutStyle(fontSize: 12.0),
-            text: TextSpan(
-                style: TextStyle(color: Colors.black), text: post.title),
-          ),
-        ),
-      ],
-    )));
+  getId() async {
+    SharedPreferences prefers = await SharedPreferences.getInstance();
+    setState(() {
+      id = prefers.getInt('id');
+    });
   }
-  return listadoPublicaciones;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+        title: 'Material App',
+        home: Scaffold(
+          body: Container(
+            child: Card(
+              clipBehavior: Clip.antiAlias,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Ink.image(
+                    image: NetworkImage(
+                        'https://flyerimages.blob.core.windows.net/imagenes/' +
+                            widget.publicacion.filename),
+                    height: 300,
+                    fit: BoxFit.fitWidth,
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.person),
+                    title: Text(widget.publicacion.title),
+                    subtitle: Text(
+                      'by AUTHOR, ' + widget.publicacion.timestamp,
+                      style: TextStyle(color: Colors.black.withOpacity(0.6)),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      widget.publicacion.description,
+                      style: TextStyle(color: Colors.black.withOpacity(0.6)),
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                  ButtonBar(
+                    alignment: MainAxisAlignment.start,
+                    children: [
+                      OutlinedButton.icon(
+                        onPressed: () {},
+                        style: TextButton.styleFrom(
+                          primary: Colors.black87,
+                        ),
+                        icon: Icon(Icons.remove_red_eye),
+                        label: Text('Me gusta'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ));
+  }
 }

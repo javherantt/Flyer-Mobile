@@ -6,7 +6,7 @@ class Publicacion {
   String description;
   String filename;
   int views;
-  DateTime timestap;
+  String timestamp;
 
   Publicacion(
       id, userId, tagId, title, description, filename, views, timestamp) {
@@ -17,6 +17,6 @@ class Publicacion {
     this.description = description;
     this.filename = filename;
     this.views = views;
-    this.timestap = timestap;
+    this.timestamp = timestamp;
   }
 }
