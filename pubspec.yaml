@@ -32,6 +32,8 @@ dependencies:
   modal_progress_hud_nsn: ^0.1.0-nullsafety-1
   flutter_session:
   shared_preferences: ^0.5.12+4
+  image_picker:
+  azstore: ^1.0.3
 
 dev_dependencies:
   flutter_test:

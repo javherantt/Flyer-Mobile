@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-
 class CitaPage extends StatefulWidget {
   @override
   _CitaPageState createState() => _CitaPageState();
@@ -30,10 +29,9 @@ class _CitaPageState extends State<CitaPage> {
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.start,            
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                
                 flex: 2,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -42,14 +40,16 @@ class _CitaPageState extends State<CitaPage> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      
-                      Container(                        
-                        height: 70,                        
+                      Container(
+                        height: 70,
                         alignment: Alignment.topLeft,
-                        child: IconButton(                          
-                          icon:const Icon(Icons.arrow_back,color: Colors.white70,size: 40.0,),
-                         onPressed: () => Navigator.of(context).pop(),                       
-                                                    
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.arrow_back,
+                            color: Colors.white70,
+                            size: 40.0,
+                          ),
+                          onPressed: () => Navigator.of(context).pop(),
                         ),
                       ),
                       Text(
@@ -177,15 +177,10 @@ class _CitaPageState extends State<CitaPage> {
                         SizedBox(
                           height: 30.0,
                         ),
-                        
                         Container(
                           width: double.infinity,
-                          child: RaisedButton(
+                          child: TextButton(
                             onPressed: () {},
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            color: Colors.blue[600],
                             child: Padding(
                               padding:
                                   const EdgeInsets.symmetric(vertical: 18.0),

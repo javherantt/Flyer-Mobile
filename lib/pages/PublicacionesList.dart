@@ -142,11 +142,13 @@ class _Publicaciones extends State<PublicacionesList> {
           item['timestamp']);
       publicaciones.add(publicacion);
     }
-    print(publicaciones.length);
     return publicaciones;
   }
 }
+//
 
+//
+//
 class DetallesPublicacion extends StatefulWidget {
   final Publicacion publicacion;
   DetallesPublicacion({this.publicacion});

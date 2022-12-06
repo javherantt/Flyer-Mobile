@@ -57,40 +57,38 @@ class _MyHomePageState extends State<MsdaPage> {
               Container(
                 padding: EdgeInsets.all(16),
                 child: TextField(
-                          keyboardType: TextInputType.text,
-                          decoration: InputDecoration(
-                            filled: true,
-                            
-                            hintText: "Nombre",
-                            prefixIcon: Icon(
-                              FontAwesomeIcons.dog,
-                              color: Colors.grey[600],
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(2.0),
-                            ),
-                          ),
-                        ),
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(
+                    filled: true,
+                    hintText: "Nombre",
+                    prefixIcon: Icon(
+                      FontAwesomeIcons.dog,
+                      color: Colors.grey[600],
+                    ),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(2.0),
+                    ),
+                  ),
+                ),
               ),
               Container(
                 padding: EdgeInsets.all(16),
                 child: TextField(
-                          keyboardType: TextInputType.text,
-                          decoration: InputDecoration(
-                            filled: true,
-                            
-                            hintText: "Raza",
-                            prefixIcon: Icon(
-                              Icons.pets,
-                              color: Colors.grey[600],
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(2.0),
-                            ),
-                          ),
-                        ),
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(
+                    filled: true,
+                    hintText: "Raza",
+                    prefixIcon: Icon(
+                      Icons.pets,
+                      color: Colors.grey[600],
+                    ),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(2.0),
+                    ),
+                  ),
+                ),
               ),
               Container(
                 padding: EdgeInsets.all(16),
@@ -117,7 +115,6 @@ class _MyHomePageState extends State<MsdaPage> {
                       "display": "Estetico",
                       "value": "Estetico",
                     },
-                    
                   ],
                   textField: 'display',
                   valueField: 'value',
@@ -164,7 +161,6 @@ class _MyHomePageState extends State<MsdaPage> {
                       "display": "Desparacitación Gatos",
                       "value": "Desparacitación Gatos",
                     },
-                    
                   ],
                   textField: 'display',
                   valueField: 'value',
@@ -173,7 +169,7 @@ class _MyHomePageState extends State<MsdaPage> {
               Container(
                 padding: EdgeInsets.all(16),
                 child: DropDownFormField(
-                  titleText: 'Fecha y hora',                  
+                  titleText: 'Fecha y hora',
                   hintText: 'Seleccione una fecha',
                   value: _myActivity3,
                   onSaved: (value) {
@@ -222,30 +218,24 @@ class _MyHomePageState extends State<MsdaPage> {
               ),
               Container(
                 padding: EdgeInsets.all(16),
-                          width: double.infinity,
-                          child: RaisedButton(
-                           onPressed: () => Navigator.of(context).pop(),  
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            color: Colors.blue[600],
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 18.0),
-                              child: Text(
-                                "Agendar",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18.0,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                width: double.infinity,
+                child: TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 18.0),
+                    child: Text(
+                      "Agendar",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18.0,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
               Container(
                 padding: EdgeInsets.all(16),
                 child: Text(_myActivityResult),
-               
               )
             ],
           ),
