@@ -18,6 +18,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  String loginMessage = "";
 
   @override
   void initState() {
@@ -130,10 +131,14 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         SizedBox(
-                          height: 10.0,
+                          height: 20.0,
+                        ),
+                        Text(
+                          loginMessage,
+                          style: TextStyle(color: Colors.red),
                         ),
                         SizedBox(
-                          height: 50.0,
+                          height: 40.0,
                         ),
                         Container(
                           width: double.infinity,
@@ -216,6 +221,9 @@ class _LoginPageState extends State<LoginPage> {
         );
         Navigator.of(context).push(route);
       } else {
+        setState(() {
+          loginMessage = "Credenciales invalidas";
+        });
         print('Invalid credentials');
       }
     } catch (e) {

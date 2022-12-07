@@ -36,12 +36,11 @@ class _Publicaciones extends State<PublicacionesList> {
                   itemBuilder: (BuildContext context, int index) {
                     return GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                            context,
-                            new MaterialPageRoute(
-                                builder: (context) => DetallesPublicacion(
-                                      publicacion: snapshot.data[index],
-                                    )));
+                        var route = new MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              new DetallesPublicacion(snapshot.data[index].id),
+                        );
+                        Navigator.push(context, route);
                       },
                       child: Card(
                         clipBehavior: Clip.antiAlias,
@@ -83,7 +82,7 @@ class _Publicaciones extends State<PublicacionesList> {
                               ),
                             ),
                             ButtonBar(
-                              alignment: MainAxisAlignment.start,
+                              alignment: MainAxisAlignment.center,
                               children: [
                                 TextButton.icon(
                                   onPressed: () {
@@ -92,9 +91,7 @@ class _Publicaciones extends State<PublicacionesList> {
                                         new MaterialPageRoute(
                                             builder: (context) =>
                                                 DetallesPublicacion(
-                                                  publicacion:
-                                                      snapshot.data[index],
-                                                )));
+                                                    snapshot.data[index].id)));
                                   },
                                   style: TextButton.styleFrom(
                                     primary: Colors.black87,
@@ -102,13 +99,6 @@ class _Publicaciones extends State<PublicacionesList> {
                                   icon: Icon(Icons.remove_red_eye),
                                   label: Text('Ver'),
                                 ),
-                                TextButton.icon(
-                                    onPressed: () {},
-                                    style: TextButton.styleFrom(
-                                      primary: Colors.red,
-                                    ),
-                                    icon: Icon(Icons.favorite),
-                                    label: Text('Me gusta'))
                               ],
                             )
                           ],
@@ -150,8 +140,8 @@ class _Publicaciones extends State<PublicacionesList> {
 //
 //
 class DetallesPublicacion extends StatefulWidget {
-  final Publicacion publicacion;
-  DetallesPublicacion({this.publicacion});
+  final int publicacionId;
+  DetallesPublicacion(this.publicacionId);
   @override
   _DetallesPublicacion createState() => _DetallesPublicacion();
 }
@@ -178,51 +168,69 @@ class _DetallesPublicacion extends State<DetallesPublicacion> {
         title: 'Material App',
         home: Scaffold(
           body: Container(
-            child: Card(
-              clipBehavior: Clip.antiAlias,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Ink.image(
-                    image: NetworkImage(
-                        'https://flyerimages.blob.core.windows.net/imagenes/' +
-                            widget.publicacion.filename),
-                    height: 300,
-                    fit: BoxFit.fitWidth,
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.person),
-                    title: Text(widget.publicacion.title),
-                    subtitle: Text(
-                      'by AUTHOR, ' + widget.publicacion.timestamp,
-                      style: TextStyle(color: Colors.black.withOpacity(0.6)),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      widget.publicacion.description,
-                      style: TextStyle(color: Colors.black.withOpacity(0.6)),
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                  ButtonBar(
-                    alignment: MainAxisAlignment.start,
-                    children: [
-                      OutlinedButton.icon(
-                        onPressed: () {},
-                        style: TextButton.styleFrom(
-                          primary: Colors.black87,
-                        ),
-                        icon: Icon(Icons.remove_red_eye),
-                        label: Text('Me gusta'),
+            child: FutureBuilder(
+                future: _getPublicacion(),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (snapshot.data == null) {
+                    return Container(
+                      child: Center(
+                        child: Text('Cargando ...'),
                       ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+                    );
+                  } else {
+                    return Card(
+                      clipBehavior: Clip.antiAlias,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Ink.image(
+                            image: NetworkImage(
+                                'https://flyerimages.blob.core.windows.net/imagenes/' +
+                                    snapshot.data.filename),
+                            height: 300,
+                            fit: BoxFit.fitWidth,
+                          ),
+                          ListTile(
+                            leading: Icon(Icons.person),
+                            title: Text(snapshot.data.title),
+                            subtitle: Text(
+                              'by AUTHOR, ' + snapshot.data.timestamp,
+                              style: TextStyle(
+                                  color: Colors.black.withOpacity(0.6)),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(
+                              snapshot.data.description,
+                              style: TextStyle(
+                                  color: Colors.black.withOpacity(0.6)),
+                              textAlign: TextAlign.left,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                }),
           ),
         ));
+  }
+
+  Future<Publicacion> _getPublicacion() async {
+    var data = await http.get(Uri.parse(
+        'https://flyer-api.azurewebsites.net/api/post/' +
+            widget.publicacionId.toString()));
+    var jsonData = json.decode(data.body);
+    Publicacion publicacion = Publicacion(
+        jsonData['id'],
+        jsonData['userId'],
+        jsonData['tagId'],
+        jsonData['title'],
+        jsonData['description'],
+        jsonData['filename'],
+        jsonData['views'],
+        jsonData['timestamp']);
+    return publicacion;
   }
 }

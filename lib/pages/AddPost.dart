@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:masveterinarias_app/pages/HomePage.dart';
 import 'package:path/path.dart' as Path;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -288,7 +289,7 @@ class _AddPost extends State<AddPost> {
             "filename": filename
           });
       if (response.statusCode == 200) {
-         var route = new MaterialPageRoute(
+        var route = new MaterialPageRoute(
           builder: (BuildContext context) => new HomePage(),
         );
         Navigator.of(context).push(route);

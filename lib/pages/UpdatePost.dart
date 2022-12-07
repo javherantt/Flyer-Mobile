@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:path/path.dart' as Path;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:masveterinarias_app/models/Publicacion.dart';
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
@@ -9,6 +11,8 @@ import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'package:azstore/azstore.dart';
 
 class UpdatePost extends StatefulWidget {
+  final int idPublicacion;
+  UpdatePost(this.idPublicacion);
   @override
   _UpdatePost createState() => _UpdatePost();
 }
@@ -16,7 +20,7 @@ class UpdatePost extends StatefulWidget {
 class _UpdatePost extends State<UpdatePost> {
   int id;
   bool isSelectedImage = false;
-  String categoria;
+  String categoria, filenameUpload, views, timestamp;
   String imagePickerMessage = "";
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
@@ -57,7 +61,7 @@ class _UpdatePost extends State<UpdatePost> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Actualizar publicación",
+                        "Detalles publicación",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 42.0,
@@ -81,164 +85,188 @@ class _UpdatePost extends State<UpdatePost> {
                         topLeft: Radius.circular(30.0),
                         topRight: Radius.circular(30.0),
                       )),
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        TextField(
-                          controller: titleController,
-                          keyboardType: TextInputType.text,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Color(0xFFE7EDEB),
-                            hintText: "Título",
-                            prefixIcon: Icon(
-                              Icons.title,
-                              color: Colors.grey[600],
+                  child: FutureBuilder(
+                      future: _getPublicacion(),
+                      builder: (BuildContext context, AsyncSnapshot snapshot) {
+                        if (snapshot.data == null) {
+                          return Container(
+                            child: Center(
+                              child: Text('Cargando ...'),
                             ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 20.0,
-                        ),
-                        TextField(
-                          controller: descriptionController,
-                          keyboardType: TextInputType.text,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Color(0xFFE7EDEB),
-                            hintText: "Descripción",
-                            prefixIcon: Icon(
-                              Icons.description,
-                              color: Colors.grey[600],
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 20.0,
-                        ),
-                        Form(
-                          key: formKey,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Container(
-                                padding: EdgeInsets.all(16),
-                                child: DropDownFormField(
-                                  titleText: 'Categoría',
-                                  hintText: 'Seleccionar ...',
-                                  value: categoria,
-                                  onSaved: (value) {
-                                    setState(() {
-                                      categoria = value;
-                                    });
-                                  },
-                                  onChanged: (value) {
-                                    setState(() {
-                                      categoria = value;
-                                    });
-                                  },
-                                  dataSource: [
-                                    {
-                                      "display": "Abstracto",
-                                      "value": "1",
-                                    },
-                                    {
-                                      "display": "Arte",
-                                      "value": "4",
-                                    },
-                                    {
-                                      "display": "Cine",
-                                      "value": "5",
-                                    },
-                                    {
-                                      "display": "Fantasia",
-                                      "value": "6",
-                                    },
-                                    {
-                                      "display": "Horror",
-                                      "value": "7",
-                                    },
-                                    {
-                                      "display": "Naturaleza",
-                                      "value": "2",
-                                    },
-                                    {
-                                      "display": "Tecnología",
-                                      "value": "8",
-                                    },
-                                    {
-                                      "display": "Videojuegos",
-                                      "value": "9",
-                                    },
-                                    {
-                                      "display": "Otros",
-                                      "value": "10",
-                                    },
-                                  ],
-                                  textField: 'display',
-                                  valueField: 'value',
+                          );
+                        } else {
+                          return Padding(
+                            padding: const EdgeInsets.all(24.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                TextField(
+                                  controller: titleController,
+                                  keyboardType: TextInputType.text,
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: Color(0xFFE7EDEB),
+                                    hintText: "Título",
+                                    prefixIcon: Icon(
+                                      Icons.title,
+                                      color: Colors.grey[600],
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 20.0,
-                        ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue),
-                          onPressed: () {
-                            _getFromGallery();
-                          },
-                          child: Text("Seleccionar imagen"),
-                        ),
-                        Text(imagePickerMessage),
-                        SizedBox(
-                          height: 30.0,
-                        ),
-                        Container(
-                          width: double.infinity,
-                          child: MaterialButton(
-                            onPressed: isSelectedImage
-                                ? () {
-                                    cargarImagen(imageFile);
-                                    postPublicacion(
-                                        titleController.text.toString(),
-                                        descriptionController.text.toString(),
-                                        Path.basename(imageFile.path));
-                                  }
-                                : null,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            color: Colors.blue[600],
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 18.0),
-                              child: Text(
-                                "Crear publicación",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18.0,
+                                SizedBox(
+                                  height: 20.0,
                                 ),
-                              ),
+                                TextField(
+                                  controller: descriptionController,
+                                  keyboardType: TextInputType.text,
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: Color(0xFFE7EDEB),
+                                    hintText: "Descripción",
+                                    prefixIcon: Icon(
+                                      Icons.description,
+                                      color: Colors.grey[600],
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 20.0,
+                                ),
+                                Form(
+                                  key: formKey,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: <Widget>[
+                                      Container(
+                                        padding: EdgeInsets.all(16),
+                                        child: DropDownFormField(
+                                          titleText: 'Categoría',
+                                          hintText: 'Seleccionar ...',
+                                          value: categoria,
+                                          onSaved: (value) {
+                                            setState(() {
+                                              categoria = value;
+                                            });
+                                          },
+                                          onChanged: (value) {
+                                            setState(() {
+                                              categoria = value;
+                                            });
+                                          },
+                                          dataSource: [
+                                            {
+                                              "display": "Abstracto",
+                                              "value": "1",
+                                            },
+                                            {
+                                              "display": "Arte",
+                                              "value": "4",
+                                            },
+                                            {
+                                              "display": "Cine",
+                                              "value": "5",
+                                            },
+                                            {
+                                              "display": "Fantasia",
+                                              "value": "6",
+                                            },
+                                            {
+                                              "display": "Horror",
+                                              "value": "7",
+                                            },
+                                            {
+                                              "display": "Naturaleza",
+                                              "value": "2",
+                                            },
+                                            {
+                                              "display": "Tecnología",
+                                              "value": "8",
+                                            },
+                                            {
+                                              "display": "Videojuegos",
+                                              "value": "9",
+                                            },
+                                            {
+                                              "display": "Otros",
+                                              "value": "10",
+                                            },
+                                          ],
+                                          textField: 'display',
+                                          valueField: 'value',
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 20.0,
+                                ),
+                                Ink.image(
+                                  image: NetworkImage(
+                                    'https://flyerimages.blob.core.windows.net/imagenes/' +
+                                        filenameUpload,
+                                  ),
+                                  height: 100,
+                                  width: 100,
+                                ),
+                                SizedBox(
+                                  height: 15.0,
+                                ),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.blue),
+                                  onPressed: () {
+                                    _getFromGallery();
+                                  },
+                                  child: Text("Seleccionar imagen"),
+                                ),
+                                Text(imagePickerMessage),
+                                SizedBox(
+                                  height: 30.0,
+                                ),
+                                Container(
+                                  width: double.infinity,
+                                  child: MaterialButton(
+                                    onPressed: isSelectedImage
+                                        ? () {
+                                            cargarImagen(imageFile);
+                                            updatePublicacion(
+                                                titleController.text.toString(),
+                                                descriptionController.text
+                                                    .toString(),
+                                                filenameUpload);
+                                          }
+                                        : null,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    color: Colors.blue[600],
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 18.0),
+                                      child: Text(
+                                        "Crear publicación",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18.0,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                          );
+                        }
+                      }),
                 ),
               )
             ],
@@ -276,16 +304,43 @@ class _UpdatePost extends State<UpdatePost> {
     }
   }
 
-  void postPublicacion(String title, description, filename) async {
+  Future<Publicacion> _getPublicacion() async {
+    var data = await http.get(Uri.parse(
+        'https://flyer-api.azurewebsites.net/api/post/' +
+            widget.idPublicacion.toString()));
+    var jsonData = json.decode(data.body);
+    Publicacion publicacion = Publicacion(
+        jsonData['id'],
+        jsonData['userId'],
+        jsonData['tagId'],
+        jsonData['title'],
+        jsonData['description'],
+        jsonData['filename'],
+        jsonData['views'],
+        jsonData['timestamp']);
+    titleController.text = publicacion.title;
+    descriptionController.text = publicacion.description;
+    categoria = publicacion.tagId.toString();
+    filenameUpload = publicacion.filename;
+    views = publicacion.views.toString();
+    timestamp = publicacion.timestamp;
+    return publicacion;
+  }
+
+  void updatePublicacion(String title, description, filename) async {
     try {
       var response = await http.post(
-          Uri.parse("https://flyer-api.azurewebsites.net/api/post"),
+          Uri.parse("https://flyer-api.azurewebsites.net/api/post/id=" +
+              widget.idPublicacion.toString()),
           body: {
+            "id": widget.idPublicacion.toString(),
             "userId": id.toString(),
             "tagId": categoria,
             "title": title,
             "description": description,
-            "filename": filename
+            "filename": filename,
+            "views": views,
+            "timestamp": timestamp
           });
       if (response.statusCode == 200) {
         Navigator.pop(context);
@@ -305,6 +360,7 @@ class _UpdatePost extends State<UpdatePost> {
         bodyBytes: bytes,
         contentType: 'image/jpg',
       );
+      filenameUpload = Path.basename(file.path);
     } catch (e) {
       print('exception: $e');
     }

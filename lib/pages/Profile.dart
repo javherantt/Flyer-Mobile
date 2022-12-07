@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:masveterinarias_app/models/Publicacion.dart';
-import 'package:masveterinarias_app/pages/HomePage.dart';
+import 'package:masveterinarias_app/pages/Login.dart';
+import 'package:masveterinarias_app/pages/UpdatePost.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:masveterinarias_app/pages/AddPost.dart';
 import '../models/Usuario.dart';
@@ -27,7 +28,12 @@ class _ProfileTap extends State<ProfileTap> {
             padding: const EdgeInsets.only(right: 2),
             child: SizedBox(
               child: TextButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    var route = new MaterialPageRoute(
+                      builder: (BuildContext context) => new LoginPage(),
+                    );
+                    Navigator.of(context).push(route);
+                  },
                   icon: Icon(
                     Icons.arrow_forward,
                     size: 18,
@@ -125,7 +131,7 @@ class _ProfileTap extends State<ProfileTap> {
                       TextButton(
                           onPressed: () {
                             var route = new MaterialPageRoute(
-                              builder: (BuildContext context) => new HomePage(),
+                              builder: (BuildContext context) => new AddPost(),
                             );
                             Navigator.push(context, route);
                           },
@@ -209,7 +215,12 @@ List<Widget> _listPublicaciones(List<Publicacion> data, BuildContext context) {
         child: Column(
       children: [
         GestureDetector(
-            onTap: () {},
+            onTap: () {
+              var route = new MaterialPageRoute(
+                builder: (BuildContext context) => new UpdatePost(publi.id),
+              );
+              Navigator.of(context).push(route);
+            },
             child: Image.network(
               'https://flyerimages.blob.core.windows.net/imagenes/' +
                   publi.filename,

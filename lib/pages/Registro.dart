@@ -1,7 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:azstore/azstore.dart';
+import 'package:path/path.dart' as Path;
 import 'package:masveterinarias_app/pages/HomePage.dart';
+import 'package:masveterinarias_app/pages/Login.dart';
 import 'package:masveterinarias_app/pages/PostList.dart';
 import 'package:masveterinarias_app/pages/PublicacionesList.dart';
 
@@ -14,6 +20,9 @@ class _RegistroPageState extends State<RegistroPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  bool isSelectedImage = false;
+  String imagePickerMessage = "";
+  File imageFile;
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +95,7 @@ class _RegistroPageState extends State<RegistroPage> {
                             fillColor: Color(0xFFE7EDEB),
                             hintText: "Email",
                             prefixIcon: Icon(
-                              Icons.person,
+                              Icons.email,
                               color: Colors.grey[600],
                             ),
                             border: OutlineInputBorder(
@@ -106,7 +115,7 @@ class _RegistroPageState extends State<RegistroPage> {
                             fillColor: Color(0xFFE7EDEB),
                             hintText: "Username",
                             prefixIcon: Icon(
-                              Icons.mail,
+                              Icons.person,
                               color: Colors.grey[600],
                             ),
                             border: OutlineInputBorder(
@@ -135,56 +144,30 @@ class _RegistroPageState extends State<RegistroPage> {
                             ),
                           ),
                         ),
-                        /*
                         SizedBox(
                           height: 20.0,
                         ),
-                        TextField(
-                          keyboardType: TextInputType.phone,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Color(0xFFE7EDEB),
-                            hintText: "Numero telefonico",
-                            prefixIcon: Icon(
-                              Icons.phone,
-                              color: Colors.grey[600],
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                          ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue),
+                          onPressed: () {
+                            _getFromGallery();
+                          },
+                          child: Text("Imagen de perfil (Opcional)"),
                         ),
                         SizedBox(
                           height: 20.0,
-                        ),
-                        TextField(
-                          keyboardType: TextInputType.datetime,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Color(0xFFE7EDEB),
-                            hintText: "Fecha de nacimiento",
-                            prefixIcon: Icon(
-                              Icons.cake,
-                              color: Colors.grey[600],
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                          ),
-                        ),*/
-                        SizedBox(
-                          height: 8.0,
                         ),
                         Container(
                           width: double.infinity,
                           child: MaterialButton(
                             onPressed: () {
+                              cargarImagen(imageFile);
                               postUser(
                                   emailController.text.toString(),
                                   usernameController.text.toString(),
-                                  passwordController.text.toString());
+                                  passwordController.text.toString(),
+                                  Path.basename(imageFile.path));
                             },
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
@@ -215,7 +198,7 @@ class _RegistroPageState extends State<RegistroPage> {
     );
   }
 
-  void postUser(String email, username, password) async {
+  void postUser(String email, username, password, filename) async {
     //String formatDate =
     //    DateFormat('yyyy-MM-ddTHH:mm:ss').format(DateTime.now());
     try {
@@ -225,7 +208,7 @@ class _RegistroPageState extends State<RegistroPage> {
             "email": email,
             "username": username,
             "password": password,
-            "image": "",
+            "image": filename,
             "role": ""
           });
       if (response.statusCode == 200) {
@@ -236,6 +219,37 @@ class _RegistroPageState extends State<RegistroPage> {
       }
     } catch (e) {
       print(e);
+    }
+  }
+
+  _getFromGallery() async {
+    PickedFile pickedFile = await ImagePicker().getImage(
+      source: ImageSource.gallery,
+      maxWidth: 1800,
+      maxHeight: 1800,
+    );
+    if (pickedFile != null) {
+      setState(() {
+        imageFile = File(pickedFile.path);
+        isSelectedImage = true;
+        imagePickerMessage = "¡Imagen seleccionada!";
+      });
+    }
+  }
+
+  Future<void> cargarImagen(File file) async {
+    Uint8List bytes = file.readAsBytesSync();
+    var storage = AzureStorage.parse(
+        'DefaultEndpointsProtocol=https;AccountName=flyerimages;AccountKey=NKC/m3+n+HmF2KHfYOdIUAbPi0iwsuISgfATeIYRIeky/DVL4pNxnRqMSDU4wrJDaToHxQy2Y91b+AStpcjltQ==;EndpointSuffix=core.windows.net');
+    try {
+      await storage.putBlob(
+        '/imagenes/' + Path.basename(file.path),
+        bodyBytes: bytes,
+        contentType: 'image/jpg',
+      );
+      print(Path.basename(file.path));
+    } catch (e) {
+      print('exception: $e');
     }
   }
 }
