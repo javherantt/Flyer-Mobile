@@ -8,12 +8,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'package:azstore/azstore.dart';
 
-class AddPost extends StatefulWidget {
+class UpdatePost extends StatefulWidget {
   @override
-  _AddPost createState() => _AddPost();
+  _UpdatePost createState() => _UpdatePost();
 }
 
-class _AddPost extends State<AddPost> {
+class _UpdatePost extends State<UpdatePost> {
   int id;
   bool isSelectedImage = false;
   String categoria;
@@ -57,7 +57,7 @@ class _AddPost extends State<AddPost> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Crear publicación",
+                        "Actualizar publicación",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 42.0,
@@ -288,10 +288,7 @@ class _AddPost extends State<AddPost> {
             "filename": filename
           });
       if (response.statusCode == 200) {
-         var route = new MaterialPageRoute(
-          builder: (BuildContext context) => new HomePage(),
-        );
-        Navigator.of(context).push(route);
+        Navigator.pop(context);
       }
     } catch (e) {
       print(e);

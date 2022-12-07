@@ -230,7 +230,7 @@ class _RegistroPageState extends State<RegistroPage> {
           });
       if (response.statusCode == 200) {
         var route = new MaterialPageRoute(
-          builder: (BuildContext context) => new HomePage(),
+          builder: (BuildContext context) => new LoginPage(),
         );
         Navigator.of(context).push(route);
       }

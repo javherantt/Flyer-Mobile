@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:masveterinarias_app/models/Publicacion.dart';
+import 'package:masveterinarias_app/pages/HomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:masveterinarias_app/pages/AddPost.dart';
 import '../models/Usuario.dart';
 import 'dart:convert';
+import 'dart:async';
 
 class ProfileTap extends StatefulWidget {
   ProfileTap({Key key}) : super(key: key);
@@ -123,9 +125,9 @@ class _ProfileTap extends State<ProfileTap> {
                       TextButton(
                           onPressed: () {
                             var route = new MaterialPageRoute(
-                              builder: (BuildContext context) => new AddPost(),
+                              builder: (BuildContext context) => new HomePage(),
                             );
-                            Navigator.of(context).push(route);
+                            Navigator.push(context, route);
                           },
                           child: Text('Agregar publicación')),
                     ]),
@@ -206,24 +208,19 @@ List<Widget> _listPublicaciones(List<Publicacion> data, BuildContext context) {
     publicaciones.add(Card(
         child: Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(5.0),
-          child: GestureDetector(
-              onTap: () {},
-              child: Image.network(
-                'https://flyerimages.blob.core.windows.net/imagenes/' +
-                    publi.filename,
-                width: 110,
-                height: 100,
-              )),
-        ),
-        Flexible(
-          child: RichText(
-            overflow: TextOverflow.ellipsis,
-            strutStyle: StrutStyle(fontSize: 12.0),
-            text: TextSpan(
-                style: TextStyle(color: Colors.black), text: publi.title),
-          ),
+        GestureDetector(
+            onTap: () {},
+            child: Image.network(
+              'https://flyerimages.blob.core.windows.net/imagenes/' +
+                  publi.filename,
+              width: 210,
+              height: 200,
+            )),
+        RichText(
+          overflow: TextOverflow.ellipsis,
+          strutStyle: StrutStyle(fontSize: 20.0),
+          text: TextSpan(
+              style: TextStyle(color: Colors.black), text: publi.title),
         ),
       ],
     )));

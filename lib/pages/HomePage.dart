@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:masveterinarias_app/pages/ExploreScreen.dart';
 import 'package:masveterinarias_app/pages/Profile.dart';
 
 import 'PublicacionesList.dart';
@@ -15,7 +16,7 @@ class HomePageState extends State<HomePage> {
   int selectedIndex = 0;
   final widgetOptions = [
     new PublicacionesList(),
-    Text('Explorar'),
+    new ExploreScreen(),
     new ProfileTap(),
   ];
 
