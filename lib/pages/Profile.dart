@@ -106,28 +106,6 @@ class _ProfileTap extends State<ProfileTap> {
                           style: Theme.of(context).textTheme.headline6,
                         ),
                       ),
-                      Row(
-                        children: [
-                          Column(
-                            children: [
-                              Text(
-                                "32",
-                                style: Theme.of(context).textTheme.headline6,
-                              ),
-                              SizedBox(
-                                height: 15,
-                              ),
-                              Text(
-                                "Publicaciones",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    .copyWith(color: Colors.black54),
-                              )
-                            ],
-                          )
-                        ],
-                      ),
                       TextButton(
                           onPressed: () {
                             var route = new MaterialPageRoute(
@@ -212,29 +190,26 @@ List<Widget> _listPublicaciones(List<Publicacion> data, BuildContext context) {
   MaterialPageRoute route;
   for (var publi in data) {
     publicaciones.add(Card(
-        child: Column(
-      children: [
-        GestureDetector(
-            onTap: () {
-              var route = new MaterialPageRoute(
-                builder: (BuildContext context) => new UpdatePost(publi.id),
-              );
-              Navigator.of(context).push(route);
-            },
-            child: Image.network(
-              'https://flyerimages.blob.core.windows.net/imagenes/' +
-                  publi.filename,
-              width: 210,
-              height: 200,
-            )),
-        RichText(
-          overflow: TextOverflow.ellipsis,
-          strutStyle: StrutStyle(fontSize: 20.0),
-          text: TextSpan(
-              style: TextStyle(color: Colors.black), text: publi.title),
-        ),
-      ],
-    )));
+      child: Column(
+        children: [
+          GestureDetector(
+              onTap: () {
+                var route = new MaterialPageRoute(
+                  builder: (BuildContext context) => new UpdatePost(publi.id),
+                );
+                Navigator.of(context).push(route);
+              },
+              child: Image.network(
+                'https://flyerimages.blob.core.windows.net/imagenes/' +
+                    publi.filename,
+                width: 200,
+                height: 180,
+                fit: BoxFit.fill,
+              )),
+          Text(publi.title),
+        ],
+      ),
+    ));
   }
   return publicaciones;
 }

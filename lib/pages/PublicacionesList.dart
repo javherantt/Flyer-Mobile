@@ -17,6 +17,7 @@ class _Publicaciones extends State<PublicacionesList> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Material App',
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(title: Text('Publicaciones')),
         body: Container(

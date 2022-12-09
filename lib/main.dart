@@ -1,5 +1,6 @@
 import 'package:masveterinarias_app/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:masveterinarias_app/pages/Cita.dart';
 import 'package:masveterinarias_app/pages/Login.dart';
 import 'package:masveterinarias_app/pages/Profile.dart';
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flyer',
       home: LoginPage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }

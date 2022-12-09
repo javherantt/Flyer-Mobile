@@ -209,58 +209,12 @@ class _UpdatePost extends State<UpdatePost> {
                                 SizedBox(
                                   height: 20.0,
                                 ),
-                                Ink.image(
-                                  image: NetworkImage(
-                                    'https://flyerimages.blob.core.windows.net/imagenes/' +
-                                        filenameUpload,
-                                  ),
-                                  height: 100,
-                                  width: 100,
-                                ),
                                 SizedBox(
                                   height: 15.0,
-                                ),
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.blue),
-                                  onPressed: () {
-                                    _getFromGallery();
-                                  },
-                                  child: Text("Seleccionar imagen"),
                                 ),
                                 Text(imagePickerMessage),
                                 SizedBox(
                                   height: 30.0,
-                                ),
-                                Container(
-                                  width: double.infinity,
-                                  child: MaterialButton(
-                                    onPressed: isSelectedImage
-                                        ? () {
-                                            cargarImagen(imageFile);
-                                            updatePublicacion(
-                                                titleController.text.toString(),
-                                                descriptionController.text
-                                                    .toString(),
-                                                filenameUpload);
-                                          }
-                                        : null,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                    color: Colors.blue[600],
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 18.0),
-                                      child: Text(
-                                        "Crear publicación",
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18.0,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
                                 ),
                               ],
                             ),
